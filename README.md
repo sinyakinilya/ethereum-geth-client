@@ -48,9 +48,9 @@ file_put_contents('tr.json', json_encode(['f' => $fromTransactions, 't' => $toTr
 - [Documentation](https://github.com/ethereum/wiki/wiki/JSON-RPC#json-rpc-api)
 
 
-## Installing Guzzle
+## Installing 
 
-The recommended way to install Guzzle is through
+The recommended way to install Client is through
 [Composer](http://getcomposer.org).
 
 ```bash
@@ -58,7 +58,7 @@ The recommended way to install Guzzle is through
 curl -sS https://getcomposer.org/installer | php
 ```
 
-Next, run the Composer command to install the latest stable version of Guzzle:
+Next, run the Composer command to install the latest stable version:
 
 ```bash
 php composer.phar require sinyakinilya/ethereum-geth-client

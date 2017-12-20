@@ -51,6 +51,10 @@ class Client
             throw new \Exception(
                 sprintf('Given ID %d, differs from expected %d', $response->id, $this->id)
             );
+        } elseif (!empty($response['error'])) {
+            throw new \Exception(
+                sprintf('Error: ', json_encode($response))
+            );
         }
 
         return $response['result'];

@@ -1,6 +1,6 @@
 <?php
 /**
- * EthereumNumber.php
+ * Hash.php
  *
  * @author   Ilya Sinyakin <sinyakin.ilya@gmail.com>
  */
@@ -24,14 +24,14 @@ final class Hash
     {
 
         if (is_numeric($input)) {
-            $hex_str = self::largeDecHex($input);
+            $hexStr = self::largeDecHex($input);
         } elseif (is_string($input)) {
-            $hex_str = self::strToHex($input);
+            $hexStr = self::strToHex($input);
         } else {
             throw new \InvalidArgumentException($input . ' is not a string or number.');
         }
 
-        return '0x' . $hex_str;
+        return '0x' . $hexStr;
     }
     /**
      * Decodes a HEX encoded number.
@@ -58,13 +58,13 @@ final class Hash
         }
 
         // Un-prefix.
-        $hex_str = substr($input, 2);
+        $hexStr = substr($input, 2);
 
         // Large Integer?
         $dec = 0;
-        $len = strlen($hex_str);
+        $len = strlen($hexStr);
         for ($i = 1; $i <= $len; $i++) {
-            $dec = bcadd($dec, bcmul(strval(hexdec($hex_str[$i - 1])), bcpow('16', strval($len - $i))));
+            $dec = bcadd($dec, bcmul(strval(hexdec($hexStr[$i - 1])), bcpow('16', strval($len - $i))));
         }
 
         return $dec;
@@ -146,6 +146,9 @@ final class Hash
 
         // Always ensure 0x prefix.
         if (!self::hasHexPrefix($address)) {
+            if ($throw) {
+                throw new \InvalidArgumentException($address . ' has invalid format.');
+            }
             return false;
         }
 

@@ -43,6 +43,53 @@ do {
 file_put_contents('tr.json', json_encode(['f' => $fromTransactions, 't' => $toTransactions]));
 ```
 
+Example: send transaction with calling smart-contract function
+```php
+include_once 'vendor/autoload.php';
+
+use SinyakinIlya\Ethereum\Client;
+use SinyakinIlya\Ethereum\Helper\Hash;
+use SinyakinIlya\Ethereum\Helper\SmartContract;
+
+$ip           = '0.0.0.0';             // geth address 
+$addressSC    = '0x0c328e06....';
+$ownerAddress = '0x978bEE7F....';
+$ABI          = 'sc-abi.json';         // file with ABI for smart-contract
+
+$senderAddress = '0x5237BC08b2FE....';
+$senderPassPhrase = '..passphrase..';
+
+$client = new Client($ip);
+$sc     = new SmartContract($client);
+$sc->setAddress($addressSC);
+$sc->setContractInterface(file_get_contents($ABI));
+
+
+function sendTransferFrom($from, $txData, $passphrase)
+{
+    global $sc, $client;
+    $functionSignature = 'transferFrom(address,address,uint256)';     //this is string you get from $sc->getFunctions();
+    $inputData = $sc->createSandRawData($functionSignature, $txData);
+    $params = new stdClass;
+    $params->from = $from;
+    $params->to = $sc->getAddress();
+    $params->gas = Hash::toHex(1000000);
+    $params->gasPrice = $client->callMethod('eth_gasPrice');
+    $params->value = Hash::toHex(0);
+    $params->data = $inputData[$functionSignature];
+
+    return $client->callMethod('personal_sendTransaction', [$params, $passphrase]);
+}
+
+$data = [
+    $ownerAddress,   // from address
+    $senderAddress,  // to adderss
+    12345            // amount tokens
+];
+
+$txHash = sendTransferFrom($senderAddress, $data, $senderPassPhrase);
+echo $txHash, PHP_EOL;
+```
 ## Help and docs
 
 - [Documentation](https://github.com/ethereum/wiki/wiki/JSON-RPC#json-rpc-api)
